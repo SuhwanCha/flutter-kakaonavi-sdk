@@ -179,7 +179,7 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
               let routeConfig = KNRouteConfiguration(carType: KNCarType._2, fuel: KNCarFuel.gasoline, useHipass: true, usage: KNCarUsage.default)
               aTrip!.routeConfig = routeConfig
               let naviView = KNNaviView(guidance: guidance, trip: aTrip, routeOption: KNRoutePriority.recommand, avoidOption: KNRouteAvoidOption.none)
-              naviView.frame = CGRect(x: 0, y: 0, width: 900, height: 810)
+              naviView.frame = CGRect(x: 0, y: 0, width: 850, height: 810)
               naviView.guideStateDelegate = self;
               naviView.stateDelegate = self;
               self._view.addSubview(naviView)
