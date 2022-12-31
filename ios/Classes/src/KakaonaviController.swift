@@ -109,11 +109,7 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
         self.sdk = KNSDK.sharedInstance()!
       let guidance = sdk.sharedGuidance()
       self.channel = FlutterMethodChannel(name: "plugins.flutter.io/kakaonavi_\(viewId)", binaryMessenger: registrar.messenger())
-        _view = UIView()
-        
-        let naviView = KNNaviView(guidance: guidance, trip: nil, routeOption: KNRoutePriority.recommand, avoidOption: KNRouteAvoidOption.none)
-        
-        _view.addSubview(naviView)
+        _view = UIView(frame: frame)
 
       super.init()
         
@@ -142,8 +138,10 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
     case "getPlatformVersion":
       result("iOS " + UIDevice.current.systemVersion)
     case "startGuide":
-//        call.arguments
-      startGuide()
+        if  let arg = call.arguments as! NSDictionary? {
+            print(arg)
+            startGuide(data: arg)
+        }
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -153,15 +151,18 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
     return _view
   }
 
-  func startGuide() {
+    func startGuide(data: NSDictionary) {
 
       let mapPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 126.73034595190879, latitude: 37.7280661381458)
       
       let start = KNPOI.init(name: "집", x: mapPos.x, y: mapPos.y)
     // 목적지 설정
-      
-      let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 127.04343256908045, latitude: 37.517515648008455)
-      let goal = KNPOI.init(name: "회사", x: goalPos.x, y: goalPos.y)
+        
+        let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: data["lng"] as! Double, latitude: data["lat"] as! Double)
+        let goal = KNPOI.init(name: data["name"] as! String, x: goalPos.x, y: goalPos.y, address: data["address"] as! String)
+
+//      let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 127.04343256908045, latitude: 37.517515648008455)
+//      let goal = KNPOI.init(name: "회사", x: goalPos.x, y: goalPos.y)
       
 //      KNSDK.sharedInstance()!.makeTrip(withStart: <#T##KNPOI#>, goal: <#T##KNPOI#>, vias: <#T##[KNPOI]?#>, completion: <#T##(KNError?, KNTrip?) -> Void#>)
       self.sdk.makeTrip(withStart: start, goal: goal, vias: []) { aError, aTrip in
@@ -172,10 +173,9 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
               let routeConfig = KNRouteConfiguration(carType: KNCarType._2, fuel: KNCarFuel.gasoline, useHipass: true, usage: KNCarUsage.default)
               aTrip!.routeConfig = routeConfig
               let naviView = KNNaviView(guidance: guidance, trip: aTrip, routeOption: KNRoutePriority.recommand, avoidOption: KNRouteAvoidOption.none)
-              naviView.frame = UIScreen.main.bounds
+              naviView.frame = CGRect(x: 0, y: 0, width: 900, height: 810)
               naviView.guideStateDelegate = self;
               naviView.stateDelegate = self;
-              
               self._view.addSubview(naviView)
               naviView.useDarkMode(true)
           }
