@@ -16,11 +16,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Demo Home Page'),
+      home: const Scaffold(
+        // appBar: AppBar(
+        //   title: const Text('Flutter Demo Home Page'),
+        // ),
+        body: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: KakaonaviView(),
         ),
-        body: const KakaonaviView(),
       ),
     );
   }

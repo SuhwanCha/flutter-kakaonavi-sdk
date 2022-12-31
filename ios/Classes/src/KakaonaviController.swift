@@ -96,19 +96,27 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
     
     
     let viewId : Int64
+    private var _view: UIView
     var channel : FlutterMethodChannel?
     var registrar : FlutterPluginRegistrar?
-    var naviView: KNNaviView
+    var sdk : KNSDK
 
     init(viewId: Int64, frame: CGRect, registrar: FlutterPluginRegistrar, argument: NSDictionary?) {
       self.viewId = viewId
+
       self.registrar = registrar
-      let guidance = KNSDK.sharedInstance()!.sharedGuidance()
-      self.naviView = KNNaviView(guidance: guidance, trip: nil, routeOption: KNRoutePriority.recommand, avoidOption: KNRouteAvoidOption.none)
+        
+        self.sdk = KNSDK.sharedInstance()!
+      let guidance = sdk.sharedGuidance()
       self.channel = FlutterMethodChannel(name: "plugins.flutter.io/kakaonavi_\(viewId)", binaryMessenger: registrar.messenger())
+        _view = UIView()
+        
+        let naviView = KNNaviView(guidance: guidance, trip: nil, routeOption: KNRoutePriority.recommand, avoidOption: KNRouteAvoidOption.none)
+        
+        _view.addSubview(naviView)
 
       super.init()
-
+        
         guidance.guideStateDelegate = self;
         guidance.routeGuideDelegate = self;
         guidance.voiceGuideDelegate = self;
@@ -116,36 +124,7 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
         guidance.locationGuideDelegate = self;
         guidance.citsGuideDelegate = self;
         guidance.useBackgroundUpdate = true
-        
-
         KNSDK.sharedInstance()!.sharedGpsManager().backgroundUpdateType = KNGPSBackgroundUpdateType.always
-        
-
-        let mapPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 126.73034595190879, latitude: 37.7280661381458)
-        
-        let start = KNPOI.init(name: "집", x: mapPos.x, y: mapPos.y)
-      // 목적지 설정
-        
-        let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 127.04343256908045, latitude: 37.517515648008455)
-        let goal = KNPOI.init(name: "회사", x: goalPos.x, y: goalPos.y)
-      
-      // 경로 생성
-      KNSDK.sharedInstance()!.makeTrip(withStart: start, goal: goal, vias: [goal]) { aError, aTrip in
-          if aError != nil {
-              print("경로 생성 실패")
-              print("KNSDK Init Failed(\(String(describing: aError?.code)), \(String(describing: aError?.msg)))")
-          } else {
-              print(aTrip!.remainTime())
-              let routeConfig = KNRouteConfiguration(carType: KNCarType._2, fuel: KNCarFuel.gasoline, useHipass: true, usage: KNCarUsage.default)
-              aTrip!.routeConfig = routeConfig
-              guidance.start(with: aTrip!, priority: KNRoutePriority.recommand, avoidOptions: 0)
-              print("경로 생성 성공")
-
-          }
-      }
-            
-      naviView.stateDelegate = self
-      naviView.sndVolume(0)
       
     channel?.setMethodCallHandler({
       [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
@@ -162,18 +141,44 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
     switch call.method {
     case "getPlatformVersion":
       result("iOS " + UIDevice.current.systemVersion)
+    case "startGuide":
+//        call.arguments
+      startGuide()
     default:
       result(FlutterMethodNotImplemented)
     }
   }
 
   func view() -> UIView {
+    return _view
+  }
+
+  func startGuide() {
+
+      let mapPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 126.73034595190879, latitude: 37.7280661381458)
       
-      naviView.useDarkMode(true)
-
-      naviView.guideStateDelegate = self
-        naviView.stateDelegate = self
-
-    return naviView
+      let start = KNPOI.init(name: "집", x: mapPos.x, y: mapPos.y)
+    // 목적지 설정
+      
+      let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 127.04343256908045, latitude: 37.517515648008455)
+      let goal = KNPOI.init(name: "회사", x: goalPos.x, y: goalPos.y)
+      
+//      KNSDK.sharedInstance()!.makeTrip(withStart: <#T##KNPOI#>, goal: <#T##KNPOI#>, vias: <#T##[KNPOI]?#>, completion: <#T##(KNError?, KNTrip?) -> Void#>)
+      self.sdk.makeTrip(withStart: start, goal: goal, vias: []) { aError, aTrip in
+          if aError != nil {
+              print("경로 찾기 실패")
+          } else {
+              let guidance = self.sdk.sharedGuidance()
+              let routeConfig = KNRouteConfiguration(carType: KNCarType._2, fuel: KNCarFuel.gasoline, useHipass: true, usage: KNCarUsage.default)
+              aTrip!.routeConfig = routeConfig
+              let naviView = KNNaviView(guidance: guidance, trip: aTrip, routeOption: KNRoutePriority.recommand, avoidOption: KNRouteAvoidOption.none)
+              naviView.frame = UIScreen.main.bounds
+              naviView.guideStateDelegate = self;
+              naviView.stateDelegate = self;
+              
+              self._view.addSubview(naviView)
+              naviView.useDarkMode(true)
+          }
+      }
   }
 }

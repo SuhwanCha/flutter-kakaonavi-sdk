@@ -37,7 +37,6 @@ public class SwiftKakaonaviPlugin: NSObject, FlutterPlugin {
           print(e)
       }
       
-
     let kakaonaviFactory = KakaonaviFactory(registrar: registrar)
     registrar.register(kakaonaviFactory, withId: "plugins.flutter.io/kakaonavi")
   }
