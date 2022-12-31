@@ -1,0 +1,33 @@
+PODS:
+  - Flutter (1.0.0)
+  - kakaonavi (0.0.1):
+    - Flutter
+    - KNSDK-UI
+  - KNSDK-UI (1.6.5):
+    - LocationCocoaPod (= 1.2.22)
+  - LocationCocoaPod (1.2.22)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - kakaonavi (from `.symlinks/plugins/kakaonavi/ios`)
+
+SPEC REPOS:
+  trunk:
+    - KNSDK-UI
+    - LocationCocoaPod
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  kakaonavi:
+    :path: ".symlinks/plugins/kakaonavi/ios"
+
+SPEC CHECKSUMS:
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  kakaonavi: 2eeaf586562d9f8377031bacce0e7663e3aaa737
+  KNSDK-UI: edb7f994e54c97e932bc69aad9a82e49f7b90b85
+  LocationCocoaPod: a38f2c155e9b0f403fb01f13e9a76f5bcde9ab4b
+
+PODFILE CHECKSUM: ddd930128a51b4de5dcae538fb05b7669e161fdd
+
+COCOAPODS: 1.11.3
