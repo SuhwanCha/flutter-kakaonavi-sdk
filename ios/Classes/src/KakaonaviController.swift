@@ -5,7 +5,70 @@ import CoreLocation
 
 
 class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDelegate,
-                          KNGuidance_LocationGuideDelegate, KNNaviView_StateDelegate{
+                           KNGuidance_LocationGuideDelegate, KNNaviView_StateDelegate, KNGuidance_GuideStateDelegate, KNGuidance_RouteGuideDelegate, KNGuidance_VoiceGuideDelegate,  KNGuidance_SafetyGuideDelegate, KNGuidance_CitsGuideDelegate {
+    func guidance(_ aGuidance: KNGuidance, didUpdateSafetyGuide aSafetyGuide: KNGuide_Safety) {
+        print("guidance")
+    }
+    
+    func guidance(_ aGuidance: KNGuidance, didUpdateAroundSafeties aSafeties: [KNSafety]?) {
+        print("guidance")
+    }
+    
+    func guidance(_ aGuidance: KNGuidance, didUpdateCitsGuide aCitsGuide: KNGuide_Cits) {
+        print("guidance")
+    }
+    
+    
+    func guidance(_ aGuidance: KNGuidance, shouldPlayVoiceGuide aVoiceGuide: KNGuide_Voice, replaceSndData aNewData: AutoreleasingUnsafeMutablePointer<NSData?>!) -> Bool {
+        print("guidance")
+        
+        return true
+    }
+    
+    func guidance(_ aGuidance: KNGuidance, willPlayVoiceGuide aVoiceGuide: KNGuide_Voice) {
+        print(aVoiceGuide)
+    }
+    
+    func guidance(_ aGuidance: KNGuidance, didFinishPlayVoiceGuide aVoiceGuide: KNGuide_Voice) {
+        print("guidance")
+    }
+    
+    func guidance(_ aGuidance: KNGuidance, didUpdateRouteGuide aRouteGuide: KNGuide_Route) {
+        print("guidance")
+    }
+    
+    func guidanceGuideStarted(_ aGuidance: KNGuidance) {
+        print("guidanceGuideStarted")
+    }
+    
+    func guidanceCheckingRouteChange(_ aGuidance: KNGuidance) {
+        print("guidanceCheckingRouteChange")
+    }
+    
+    func guidanceOut(ofRoute aGuidance: KNGuidance) {
+        print("guidanceOut")
+    }
+    
+    func guidanceRouteUnchanged(_ aGuidance: KNGuidance) {
+        print("guidanceRouteUnchanged")
+    }
+    
+    func guidance(_ aGuidance: KNGuidance, routeUnchangedWithError aError: KNError) {
+        print("guidance")
+    }
+    
+    func guidanceRouteChanged(_ aGuidance: KNGuidance) {
+        print("guidanceRouteChanged")
+    }
+    
+    func guidanceGuideEnded(_ aGuidance: KNGuidance) {
+        print("guidanceGuideEnded")
+    }
+    
+    func guidance(_ aGuidance: KNGuidance, didUpdate aRoutes: [KNRoute], multiRouteInfo aMultiRouteInfo: KNMultiRouteInfo?) {
+        print("guidance")
+    }
+    
     func naviViewDidUpdateSndVolume(_ aVolume: Float) {
         
     }
@@ -46,25 +109,41 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
 
       super.init()
 
+        guidance.guideStateDelegate = self;
+        guidance.routeGuideDelegate = self;
+        guidance.voiceGuideDelegate = self;
+        guidance.safetyGuideDelegate = self;
+        guidance.locationGuideDelegate = self;
+        guidance.citsGuideDelegate = self;
+        guidance.useBackgroundUpdate = true
+        
 
-      let start = KNPOI.init(name: "집", x: 290122, y: 564488, address: "경기도 파주시 교하로 70")
+        KNSDK.sharedInstance()!.sharedGpsManager().backgroundUpdateType = KNGPSBackgroundUpdateType.always
+        
+
+        let mapPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 126.73034595190879, latitude: 37.7280661381458)
+        
+        let start = KNPOI.init(name: "집", x: mapPos.x, y: mapPos.y)
       // 목적지 설정
-      let goal = KNPOI.init(name: "회사", x: 316554, y: 545039, address: "서울특별시 강남구 압구정로36길 55")
+        
+        let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 127.04343256908045, latitude: 37.517515648008455)
+        let goal = KNPOI.init(name: "회사", x: goalPos.x, y: goalPos.y)
       
       // 경로 생성
-      KNSDK.sharedInstance()!.makeTrip(withStart: start, goal: goal, vias: nil) { aError, aTrip in
+      KNSDK.sharedInstance()!.makeTrip(withStart: start, goal: goal, vias: [goal]) { aError, aTrip in
           if aError != nil {
               print("경로 생성 실패")
               print("KNSDK Init Failed(\(String(describing: aError?.code)), \(String(describing: aError?.msg)))")
           } else {
+              print(aTrip!.remainTime())
+              let routeConfig = KNRouteConfiguration(carType: KNCarType._2, fuel: KNCarFuel.gasoline, useHipass: true, usage: KNCarUsage.default)
+              aTrip!.routeConfig = routeConfig
               guidance.start(with: aTrip!, priority: KNRoutePriority.recommand, avoidOptions: 0)
               print("경로 생성 성공")
 
           }
       }
             
-      guidance.locationGuideDelegate = self
-      naviView.guideStateDelegate = self
       naviView.stateDelegate = self
       naviView.sndVolume(0)
       
@@ -89,12 +168,11 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
   }
 
   func view() -> UIView {
-      let guidance = KNSDK.sharedInstance()!.sharedGuidance()
-    
-      KNSDK.sharedInstance()!.sharedGpsManager().backgroundUpdateType = KNGPSBackgroundUpdateType.always
-      guidance.startWithoutTrip()
+      
       naviView.useDarkMode(true)
 
+      naviView.guideStateDelegate = self
+        naviView.stateDelegate = self
 
     return naviView
   }

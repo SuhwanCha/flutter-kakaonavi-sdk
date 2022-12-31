@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import AVKit
 
 public class SwiftKakaonaviPlugin: NSObject, FlutterPlugin {
   var registrar: FlutterPluginRegistrar?
@@ -16,6 +17,26 @@ public class SwiftKakaonaviPlugin: NSObject, FlutterPlugin {
               print("설정 완료")
           }
       }
+      
+      let session = AVAudioSession.sharedInstance()
+      do {
+          try session.setActive(false)
+      } catch let e {
+          print(e)
+      }
+      let category: AVAudioSession.CategoryOptions = .mixWithOthers
+      try? AVAudioSession.sharedInstance().setMode(.default)
+      do {
+          try AVAudioSession.sharedInstance().setCategory(.playback, options: category)
+      } catch let e {
+          print(e)
+      }
+      do {
+          try session.setActive(true)
+      } catch let e {
+          print(e)
+      }
+      
 
     let kakaonaviFactory = KakaonaviFactory(registrar: registrar)
     registrar.register(kakaonaviFactory, withId: "plugins.flutter.io/kakaonavi")
