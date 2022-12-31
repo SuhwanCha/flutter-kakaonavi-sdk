@@ -1,6 +1,4 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import 'kakaonavi_method_channel.dart';
+part of kakao_navi;
 
 abstract class KakaonaviPlatform extends PlatformInterface {
   /// Constructs a KakaonaviPlatform.

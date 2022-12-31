@@ -42,7 +42,7 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
       self.registrar = registrar
       let guidance = KNSDK.sharedInstance()!.sharedGuidance()
       self.naviView = KNNaviView(guidance: guidance, trip: nil, routeOption: KNRoutePriority.recommand, avoidOption: KNRouteAvoidOption.none)
-      self.channel = FlutterMethodChannel(name: "plugins.flutter.io/location_\(viewId)", binaryMessenger: registrar.messenger())
+      self.channel = FlutterMethodChannel(name: "plugins.flutter.io/kakaonavi_\(viewId)", binaryMessenger: registrar.messenger())
 
       super.init()
 

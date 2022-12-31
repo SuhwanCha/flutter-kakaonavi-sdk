@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-
-import 'kakaonavi_platform_interface.dart';
+part of kakao_navi;
 
 /// An implementation of [KakaonaviPlatform] that uses method channels.
 class MethodChannelKakaonavi extends KakaonaviPlatform {
@@ -11,7 +8,8 @@ class MethodChannelKakaonavi extends KakaonaviPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
 }

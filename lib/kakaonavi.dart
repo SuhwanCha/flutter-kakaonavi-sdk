@@ -1,8 +1,11 @@
+library kakao_navi;
 
-import 'kakaonavi_platform_interface.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class Kakaonavi {
-  Future<String?> getPlatformVersion() {
-    return KakaonaviPlatform.instance.getPlatformVersion();
-  }
-}
+part './kakaonavi_method_channel.dart';
+
+part './kakaonavi_platform_interface.dart';
+
+part './views/kakaonavi_view.dart';
