@@ -15,10 +15,15 @@ class NaviGuideStarted extends NaviEvent {
   final double lng;
   final String address;
 
+  final double startLat;
+  final double startLng;
+
   NaviGuideStarted({
     required this.name,
     required this.lat,
     required this.lng,
     required this.address,
+    required this.startLat,
+    required this.startLng,
   });
 }

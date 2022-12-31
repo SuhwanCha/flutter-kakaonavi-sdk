@@ -163,7 +163,7 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
 
     func startGuide(data: NSDictionary) {
 
-      let mapPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 126.73034595190879, latitude: 37.7280661381458)
+      let mapPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: data["startLng"] as! Double, latitude: data["startLat"] as! Double)
       
       let start = KNPOI.init(name: "집", x: mapPos.x, y: mapPos.y)
     // 목적지 설정

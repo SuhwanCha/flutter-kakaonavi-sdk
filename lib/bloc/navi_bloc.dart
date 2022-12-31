@@ -20,6 +20,8 @@ class NaviBloc extends Bloc<NaviEvent, NaviState> {
         'lat': event.lat,
         'lng': event.lng,
         'address': event.address,
+        'startLat': event.startLat,
+        'startLng': event.startLng,
       });
     }
   }
