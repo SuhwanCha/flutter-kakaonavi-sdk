@@ -1,4 +1,4 @@
-part of 'navi_bloc.dart';
+part of kakao_navi;
 
 @immutable
 abstract class NaviState {}

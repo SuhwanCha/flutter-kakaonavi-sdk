@@ -38,7 +38,12 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
     }
     
     func guidanceGuideStarted(_ aGuidance: KNGuidance) {
-        print("guidanceGuideStarted")
+        self.channel?.invokeMethod("guide#update",
+                                   arguments: [
+                                    "remainTime" : aGuidance.trip?.remainTime(),
+                                    "remainDistance": aGuidance.trip?.remainDist(),
+                                    "cost": aGuidance.trip?.elapsedCost()
+                                              ])
     }
     
     func guidanceCheckingRouteChange(_ aGuidance: KNGuidance) {
@@ -82,6 +87,12 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
     }
     
     func guidance(_ aGuidance: KNGuidance, didUpdate aLocationGuide: KNGuide_Location) {
+        self.channel?.invokeMethod("guide#update",
+                                   arguments: [
+                                    "remainTime" : aGuidance.trip?.remainTime(),
+                                    "remainDistance": aGuidance.trip?.remainDist(),
+                                    "cost": aGuidance.trip?.remainCost()
+                                              ])
     }
     
     func naviViewGuideEnded(_ aNaviView: KNNaviView) {
@@ -139,7 +150,6 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
       result("iOS " + UIDevice.current.systemVersion)
     case "startGuide":
         if  let arg = call.arguments as! NSDictionary? {
-            print(arg)
             startGuide(data: arg)
         }
     default:
@@ -161,10 +171,6 @@ class KakaonaviController: NSObject, FlutterPlatformView,KNNaviView_GuideStateDe
         let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: data["lng"] as! Double, latitude: data["lat"] as! Double)
         let goal = KNPOI.init(name: data["name"] as! String, x: goalPos.x, y: goalPos.y, address: data["address"] as! String)
 
-//      let goalPos = KNSDK.sharedInstance()!.convertWGS84ToKATEC(withLongitude: 127.04343256908045, latitude: 37.517515648008455)
-//      let goal = KNPOI.init(name: "회사", x: goalPos.x, y: goalPos.y)
-      
-//      KNSDK.sharedInstance()!.makeTrip(withStart: <#T##KNPOI#>, goal: <#T##KNPOI#>, vias: <#T##[KNPOI]?#>, completion: <#T##(KNError?, KNTrip?) -> Void#>)
       self.sdk.makeTrip(withStart: start, goal: goal, vias: []) { aError, aTrip in
           if aError != nil {
               print("경로 찾기 실패")

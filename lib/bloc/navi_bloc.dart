@@ -1,11 +1,4 @@
-import 'dart:async';
-
-import 'package:bloc/bloc.dart';
-import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
-
-part 'navi_event.dart';
-part 'navi_state.dart';
+part of kakao_navi;
 
 class NaviBloc extends Bloc<NaviEvent, NaviState> {
   NaviBloc() : super(NaviNotInitial()) {
